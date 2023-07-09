@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.judahben149.talknotes.screen.RecognitionScreen
 import com.judahben149.talknotes.ui.theme.TalkNotesTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -46,64 +47,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var canRecord by remember {
-                mutableStateOf(false)
-            }
-
-            val recordAudioLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission(),
-                onResult = { isGranted ->
-                    canRecord = isGranted
-                }
-            )
-
-            LaunchedEffect(key1 = recordAudioLauncher) {
-                recordAudioLauncher.launch(Manifest.permission.RECORD_AUDIO)
-            }
-
-            val state by parser.state.collectAsState()
-
-            TalkNotesTheme {
-                Scaffold(
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-                                if (state.isSpeaking) {
-                                    parser.stopListening()
-                                } else parser.startListening()
-                            }
-                        ) {
-                            AnimatedContent(targetState = state.isSpeaking) { isSpeaking ->
-                                if (isSpeaking) {
-                                    Icon(imageVector = Icons.Rounded.Stop, contentDescription = null)
-                                } else {
-                                    Icon(imageVector = Icons.Rounded.Mic, contentDescription = null)
-                                }
-                            }
-                        }
-                    }
-                ) { paddingValues ->
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        AnimatedContent(targetState = state.isSpeaking) { isSpeaking ->
-                            if (isSpeaking) {
-                                Text(text = "Speaking...")
-                            } else {
-                                Text(text = state.spokenText.ifEmpty { "Click on mic to record audio" })
-                            }
-                        }
-                    }
-                }
-
-            }
+            RecognitionScreen(parser = parser)
         }
     }
 }
