@@ -63,53 +63,46 @@ class MainActivity : ComponentActivity() {
 
             val state by parser.state.collectAsState()
 
-            Scaffold(
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            if (state.isSpeaking) {
-                                parser.stopListening()
-                            } else parser.startListening()
+            TalkNotesTheme {
+                Scaffold(
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                if (state.isSpeaking) {
+                                    parser.stopListening()
+                                } else parser.startListening()
+                            }
+                        ) {
+                            AnimatedContent(targetState = state.isSpeaking) { isSpeaking ->
+                                if (isSpeaking) {
+                                    Icon(imageVector = Icons.Rounded.Stop, contentDescription = null)
+                                } else {
+                                    Icon(imageVector = Icons.Rounded.Mic, contentDescription = null)
+                                }
+                            }
                         }
+                    }
+                ) { paddingValues ->
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
                         AnimatedContent(targetState = state.isSpeaking) { isSpeaking ->
                             if (isSpeaking) {
-                                Icon(imageVector = Icons.Rounded.Stop, contentDescription = null)
+                                Text(text = "Speaking...")
                             } else {
-                                Icon(imageVector = Icons.Rounded.Mic, contentDescription = null)
+                                Text(text = state.spokenText.ifEmpty { "Click on mic to record audio" })
                             }
                         }
                     }
                 }
-            ) { paddingValues ->
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    AnimatedContent(targetState = state.isSpeaking) { isSpeaking ->
-                        if (isSpeaking) {
-                            Text(text = "Speaking...")
-                        } else {
-                            Text(text = state.spokenText.ifEmpty { "Click on mic to record audio" })
-                        }
-                    }
-                }
-            }
-
-            TalkNotesTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-
-                }
             }
         }
     }
